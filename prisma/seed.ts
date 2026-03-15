@@ -1,8 +1,15 @@
-import 'dotenv/config';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 import { randomBytes } from 'crypto';
+import 'dotenv/config';
+import pg from 'pg';
 
-const prisma = new PrismaClient();
+const pool = new pg.Pool({
+  connectionString: process.env['DATABASE_URL'],
+  ssl: { rejectUnauthorized: false },
+});
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   // Create kiosks
@@ -10,7 +17,7 @@ async function main() {
     data: {
       name: 'Gate A',
       location: 'Main Entrance',
-      secretKey: randomBytes(32).toString('hex'),
+      secretKey: randomBytes(10).toString('hex'),
     },
   });
 
@@ -18,7 +25,7 @@ async function main() {
     data: {
       name: 'Gate B',
       location: 'Side Entrance',
-      secretKey: randomBytes(32).toString('hex'),
+      secretKey: randomBytes(10).toString('hex'),
     },
   });
 
@@ -62,4 +69,7 @@ main()
     console.error(e);
     process.exit(1);
   })
-  .finally(() => prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect();
+    await pool.end();
+  });
