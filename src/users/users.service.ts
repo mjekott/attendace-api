@@ -41,4 +41,20 @@ export class UsersService {
       },
     });
   }
+
+  async findByEmployeeIdWithEmbeddings(employeeId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { employeeId },
+      include: { embeddings: { select: { vector: true } } },
+    });
+
+    if (!user) return null;
+
+    return {
+      id: user.id,
+      employeeId: user.employeeId,
+      name: user.name,
+      embeddings: user.embeddings.map((e) => JSON.parse(e.vector) as number[]),
+    };
+  }
 }

@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { EmbeddingsModule } from './embeddings/embeddings.module';
 import { AttendanceModule } from './attendance/attendance.module';
 import { VisitorsModule } from './visitors/visitors.module';
+import { SyncModule } from './sync/sync.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { VisitorsModule } from './visitors/visitors.module';
     EmbeddingsModule,
     AttendanceModule,
     VisitorsModule,
+    SyncModule,
   ],
 })
 export class AppModule {}
