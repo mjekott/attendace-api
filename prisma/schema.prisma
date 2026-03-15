@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String          @id @default(uuid())
+  name        String
+  employeeId  String          @unique
+  department  String?
+  embeddings  FaceEmbedding[]
+  attendances Attendance[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model FaceEmbedding {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vector    String   // JSON-encoded Float[]
+  createdAt DateTime @default(now())
+}
+
+model Kiosk {
+  id          String       @id @default(uuid())
+  name        String
+  location    String
+  secretKey   String       @unique
+  isActive    Boolean      @default(true)
+  lastSeen    DateTime?
+  attendances Attendance[]
+  gatePasses  GatePass[]
+  createdAt   DateTime     @default(now())
+}
+
+model Attendance {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  kioskId    String
+  kiosk      Kiosk    @relation(fields: [kioskId], references: [id])
+  date       DateTime
+  checkedIn  DateTime
+  checkedOut DateTime?
+  status     String   @default("PRESENT") // PRESENT | LATE | LEFT_EARLY
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, date])
+}
+
+model GatePass {
+  id           String    @id @default(uuid())
+  accessCode   String    @unique
+  visitorName  String
+  purpose      String
+  hostName     String
+  expectedDate DateTime
+  status       String    @default("PENDING") // PENDING | CHECKED_IN | CHECKED_OUT | EXPIRED
+  qrCode       String
+  kioskId      String?
+  kiosk        Kiosk?    @relation(fields: [kioskId], references: [id])
+  checkedIn    DateTime?
+  checkedOut   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
