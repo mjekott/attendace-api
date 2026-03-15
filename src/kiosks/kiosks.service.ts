@@ -54,4 +54,11 @@ export class KiosksService {
       data: dto,
     });
   }
+
+  async updateStatus(kioskId: string) {
+    return this.prisma.kiosk.update({
+      where: { id: kioskId },
+      data: { lastSeen: new Date() },
+    });
+  }
 }

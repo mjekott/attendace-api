@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Patch, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, UseGuards } from '@nestjs/common';
 import { KiosksService } from './kiosks.service';
 import { CreateKioskDto } from './dto/create-kiosk.dto';
 import { UpdateKioskDto } from './dto/update-kiosk.dto';
+import { UpdateKioskStatusDto } from './dto/update-kiosk-status.dto';
+import { KioskAuthGuard } from '../common/guards/kiosk-auth.guard';
+import { CurrentKiosk } from '../common/decorators/current-kiosk.decorator';
 
 @Controller('kiosks')
 export class KiosksController {
@@ -20,6 +23,15 @@ export class KiosksController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.kiosksService.findOne(id);
+  }
+
+  @Patch('status')
+  @UseGuards(KioskAuthGuard)
+  updateStatus(
+    @CurrentKiosk() kiosk: { kioskId: string },
+    @Body() dto: UpdateKioskStatusDto,
+  ) {
+    return this.kiosksService.updateStatus(kiosk.kioskId);
   }
 
   @Patch(':id')
