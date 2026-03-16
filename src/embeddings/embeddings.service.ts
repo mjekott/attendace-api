@@ -4,8 +4,8 @@ import { cosineSimilarity } from '../common/utils/cosine-similarity';
 import { EnrollEmbeddingDto } from './dto/enroll-embedding.dto';
 
 // MobileFaceNet 192-dim cosine similarity threshold
-// >= 0.6 = confident match, 0.4-0.6 = uncertain, < 0.4 = no match
-const MATCH_THRESHOLD = 0.6;
+// >= 0.75 = confident match, 0.5-0.75 = uncertain, < 0.5 = no match
+const MATCH_THRESHOLD = 0.75;
 
 interface MatchResult {
   matched: boolean;
